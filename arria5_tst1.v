@@ -802,6 +802,8 @@ assign xOE_DRV_ALL=xOE_DRV0|
 assign  D_MISO =xD_MISO0&
 				xD_MISO1;
 
+
+
 //assign DE_MISO_LVDS_3V3= (CE_MO==0)?1'b1:1'b0;//управление выходным драйвером lvds SPI (не будет работать с кучей кассет!)
 assign DE_MISO_LVDS_3V3=xOE_DRV_ALL;
 
@@ -817,6 +819,15 @@ Block_write_spi_bpl
  #(32) spi_TEST_wr_bpl1(.adr({ADDR_SPI_BPL,4'd2}),.clk(clk_125),.sclk(CLK_MO),   .mosi(D_MOSI),.miso(),.cs(CE_MO) ,.rst(0) ,
 	.out(wTEST_bpl));	  	//запись контрольного регистра - проверка шины SPI
 //-----------------------------------------------------------------
+
+logic [47:0] ver_data;
+versiya_fpga072 
+inst_versiya_fpga072 (.data(ver_data));
+
+
+Block_read_spi 
+ #(48,30) spi_read_versiya  (.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO_ver),.cs(xCS_FPGA1) ,.rst(0) ,
+	.inport(ver_data));//чтение test
 
 Block_read_spi 
  #(32,30) spi_test       (.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO1),.cs(xCS_FPGA1) ,.rst(0) ,
@@ -1109,6 +1120,7 @@ assign xFLASH_MOSI_3V3 = xSPI3_MOSI;
 wire   xSPI3_MISO_AND_CS2;
 wire   xSPI3_MISO_AND;
 assign xSPI3_MISO_AND = 
+                            xSPI3_MISO_ver&  //тут скачиваем новер версии прошивки
 							xSPI3_MISO1&
 							xSPI3_MISO2&
 							xSPI3_MISO3&//min-max SYNC0..SYNC2
