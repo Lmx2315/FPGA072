@@ -819,14 +819,14 @@ Block_write_spi_bpl
  #(32) spi_TEST_wr_bpl1(.adr({ADDR_SPI_BPL,4'd2}),.clk(clk_125),.sclk(CLK_MO),   .mosi(D_MOSI),.miso(),.cs(CE_MO) ,.rst(0) ,
 	.out(wTEST_bpl));	  	//запись контрольного регистра - проверка шины SPI
 //-----------------------------------------------------------------
+wire xSPI3_MISO_ver;
 
 logic [47:0] ver_data;
 versiya_fpga072 
 inst_versiya_fpga072 (.data(ver_data));
 
-
 Block_read_spi 
- #(48,30) spi_read_versiya  (.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO_ver),.cs(xCS_FPGA1) ,.rst(0) ,
+ #(48,74) spi_read_versiya  (.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO_ver),.cs(xCS_FPGA1) ,.rst(0) ,
 	.inport(ver_data));//чтение test
 
 Block_read_spi 
