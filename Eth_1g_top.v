@@ -606,8 +606,8 @@ rst_crc<=control_UDP_form[0]|wrst_crc|TIME_CLR;
 if (rst_crc) begin timer_rst_crc<=0; rst_crc_z<=1; end
 else
 	begin
-	if (timer_rst_crc <1000) timer_rst_crc<=timer_rst_crc+1; 
-	if (timer_rst_crc== 990) rst_crc_z<=1; else rst_crc_z<=0;	
+	if (timer_rst_crc <100) timer_rst_crc<=timer_rst_crc+1; 
+	if (timer_rst_crc== 99) rst_crc_z<=1; else rst_crc_z<=0;	
 	end
 end
 //-------------------------------------------------------

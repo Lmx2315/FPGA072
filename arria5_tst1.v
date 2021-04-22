@@ -990,7 +990,6 @@ logic TST_sync2;
 		);
 */
 
-
 logic FLAG_1Hz_TST;
 
 cntr_module inst_cntr_module
@@ -1001,7 +1000,7 @@ cntr_module inst_cntr_module
 			.sync1 (FPGA_SYNC2),//
 			.sync2 (FPGA_SYNC3),//	  //секундная метка!        SYS_REF
 			.tst   (FLAG_1Hz_TST),    //тестовый вход для экстренного формирования секундной метки
-			.rst   (~rst_cntr),  	  //активный 0 !
+			.rst   (rst_cntr),  	  //активный 1 !
 			.FLAG_1Hz(xFLAG_1Hz),	  //флаг сообщает об источнике секундной метки 1 - внешняя , 0 - внутренняя
 			.T1hz(w_T1HZ),			  //выход секундной метки, либо внешней либо внутренней
 			.duration_T1hz(cntr_T1hz),//value of the duration of the current second mark
@@ -2336,8 +2335,8 @@ wire rst_block_eth1;
 rst reset_ETH1(clk_125,rst_block_eth1);
 logic CLR_TIME_ETH0;
 
-wire Numb_inter0;
-wire Numb_inter1;
+wire [15:0] Numb_inter0;
+wire [15:0] Numb_inter1;
 
 
 eth_1g_top //MAC0

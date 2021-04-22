@@ -127,8 +127,8 @@ always_ff @(posedge clk) frnt2<={frnt2[2:0],sync2};//секундная метк
 
 always_ff @(posedge clk) 
 begin
-if (frnt0[3:1]==3'b011) sch0<='0; else if (sch0<'1)  sch0<=sch0+1'b1;
-if (frnt1[3:1]==3'b011) sch1<='0; else if (sch1<'1)  sch1<=sch1+1'b1;
+if (frnt0[1:0]==2'b01 ) sch0<='0; else if (sch0<'1)  sch0<=sch0+1'b1;
+if (frnt1[1:0]==2'b01 ) sch1<='0; else if (sch1<'1)  sch1<=sch1+1'b1;
 if (frnt2[3:1]==3'b011) sch2<='0; else if (sch2<'1)  sch2<=sch2+1'b1;
 end
 
@@ -145,7 +145,7 @@ begin
  	FLAG_RST2<=1;
 	end else 
 	begin
-		if (frnt0[3:1]==3'b011) 
+		if (frnt0[1:0]==2'b01) 
 		begin		  
 		 	if (time0_min>sch0) time0_min<=sch0+1;
 		 	if (time0_max<sch0) time0_max<=sch0+1; 
@@ -155,7 +155,7 @@ begin
 				if (time0_max<sch0) time0_max<=sch0; 
 			end
 
-		if (frnt1[3:1]==3'b011) 
+		if (frnt1[1:0]==2'b01) 
 		begin
 		 	if (time1_min>sch1) time1_min<=sch1+1;
 		 	if (time1_max<sch1) time1_max<=sch1+1;

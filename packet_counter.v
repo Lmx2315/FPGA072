@@ -39,33 +39,38 @@ wire clr ;
 input [7:0] n_ch ;
 wire  [7:0] n_ch ;
  
-reg [31:0] sch_int=0;
-reg [31:0] accum0=0;	 
-reg [31:0] accum1=0;
-reg [31:0] data=0;
+reg  [31:0] sch_int=0;
+reg  [31:0] accum0=0;	 
+reg  [31:0] accum1=0;
+wire [31:0] data;
+reg FLAG=0;
 
 assign q={Numb_inter,data[15:0]};	//объеденяем и выдаём комбинацию номер интервала после секунднйо метки + номер пачки внутри интервала  
+
+assign data=(FLAG)?accum1:accum0;
 	
 always @(posedge clk)
 	if (clr)
 		begin
 		accum0<=0;	
 		accum1<=0;
-		data  <=0;	
+//		data  <=0;	
 		end
 	else
 	if (ev)
 	begin	
 	if (n_ch==0) 
 		begin
+		FLAG  <=0;
 		accum0<=accum0+1; 
-		data  <=accum0;
+//		data  <=accum0;
 		end
 		else
 	if (n_ch==1) 
 		begin
+		FLAG  <=1;
 		accum1<=accum1+1;
-		data  <=accum1;
+//		data  <=accum1;
 	    end                  
 	end	
 

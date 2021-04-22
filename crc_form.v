@@ -250,10 +250,10 @@ always @(posedge clk)
 							end
 					
 				end 
-			//		else
-			//		begin
-			//		if (timer_delay!=20000000) timer_delay<=timer_delay+1; else sch_delay<=0;//задержка 0.5 сек
-			//		end
+//					else
+//					begin
+//					if (timer_delay!=20000000) timer_delay<=timer_delay+1; else sch_delay<=0;//задержка 0.5 сек
+//					end
 		end
 
 
