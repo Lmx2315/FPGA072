@@ -524,7 +524,7 @@ assign  xTX_FTDI_1	  		=TX_FTDI_1;
 assign  xBOOT_MK_FTDI 		=BOOT_MK_FTDI;
 assign  xRESET_MK_FTDI		=RESET_MK_FTDI;
 assign  xMR_RESET_MK_FPGA	=MR_RESET_MK_FPGA;
-assign  xBOOT_MK_FPGA		=BOOT_MK_FPGA;
+assign  xBOOT_MK_FPGA		=0;//заменяем джампер на землю,BOOT_MK_FPGA
 
 
 assign 	xWR_BUS		 =WR_BUS;
@@ -1044,6 +1044,10 @@ Block_read_spi_v2
  #(24,52) spi_temp_fpga(.clk(clk_125),  .sclk   (xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO_TEMP),.cs(xCS_FPGA1)  ,.rst(0),
 				  	  .clr(xTEMP_REQ),.inport (DATA_FPGA_INFO));//скачиваем показания Темп датчика и перезапускаем АЦП термометра
 
+//------------------------------------------------------+
+//               Подсчитываем время работы блока
+//work_clock 
+//inst_work_clock (.clk(clk), .sec(sec), .rst(rst), .data(data));
 //------------------------------------------------------+
 //Температурные датчики материнской платы
 wire [71:0] TEMP0_DATA;
