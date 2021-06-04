@@ -28,10 +28,10 @@ wire wtreq ;
 
 reg [Nbit-1:0] data_port=0; 
 reg [Nbit-1:0] data_in=0; 
-reg [3:0] front_clk_spi=0;	 
-reg [3:0] front_cs_spi=0;	 
-reg [3:0] flag=0;   
-reg [7:0] sch;	 
+reg [ 3:0] front_clk_spi=0;	 
+reg [ 3:0] front_cs_spi=0;	 
+reg [ 3:0] flag=0;   
+reg [31:0] sch;	 
 reg reg_o=0;
 reg r_w = 0;//
 reg [Nbit:0] reg_out=0;
@@ -61,10 +61,13 @@ if (rst)
 						sch<=sch+1;
 						end	
 					    else if (sch==8)  
-							begin 
-							sch<=0;
-							if (data_in[6:0]==param_adr) begin flag<=1;  end
-							r_w <=data_in[7]; 
+							begin							
+								if (data_in[6:0]==param_adr) 
+								begin 
+								sch <=0;
+								flag<=1;  
+								r_w <=data_in[7]; 
+								end							
 							end 		
 					end
 					else

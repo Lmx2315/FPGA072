@@ -55,9 +55,9 @@ endmodule
 //	needed under any third party's intellectual property, are provided herein.
 //-->
 // Retrieval info: <instance entity-name="altera_fir_compiler_ii" version="18.1" >
-// Retrieval info: 	<generic name="filterType" value="single" />
+// Retrieval info: 	<generic name="filterType" value="decim" />
 // Retrieval info: 	<generic name="interpFactor" value="1" />
-// Retrieval info: 	<generic name="decimFactor" value="1" />
+// Retrieval info: 	<generic name="decimFactor" value="2" />
 // Retrieval info: 	<generic name="symmetryMode" value="sym" />
 // Retrieval info: 	<generic name="L_bandsFilter" value="1" />
 // Retrieval info: 	<generic name="inputChannelNum" value="1" />
@@ -82,7 +82,7 @@ endmodule
 // Retrieval info: 	<generic name="inputType" value="int" />
 // Retrieval info: 	<generic name="inputBitWidth" value="20" />
 // Retrieval info: 	<generic name="inputFracBitWidth" value="0" />
-// Retrieval info: 	<generic name="coeffSetRealValue" value="-3.53E-4,-3.0E-4,0.002129,0.00764,0.012321,0.010001,5.95E-4,-0.006679,-0.003525,0.005073,0.005965,-0.003023,-0.008085,3.7E-5,0.009512,0.00404,-0.009573,-0.008909,0.007623,0.013872,-0.003232,-0.017926,-0.003664,0.019888,0.012681,-0.018542,-0.022932,0.012779,0.033017,-0.001729,-0.041021,-0.015157,0.04447,0.038137,-0.040038,-0.067373,0.022412,0.103343,0.02009,-0.146685,-0.126128,0.180379,0.506064,0.506064,0.180379,-0.126128,-0.146685,0.02009,0.103343,0.022412,-0.067373,-0.040038,0.038137,0.04447,-0.015157,-0.041021,-0.001729,0.033017,0.012779,-0.022932,-0.018542,0.012681,0.019888,-0.003664,-0.017926,-0.003232,0.013872,0.007623,-0.008909,-0.009573,0.00404,0.009512,3.7E-5,-0.008085,-0.003023,0.005965,0.005073,-0.003525,-0.006679,5.95E-4,0.010001,0.012321,0.00764,0.002129,-3.0E-4,-3.53E-4" />
+// Retrieval info: 	<generic name="coeffSetRealValue" value="-0.0013,-0.004639,-0.006686,-0.002603,0.004482,0.004237,-0.003867,-0.005435,0.004736,0.008682,-0.004124,-0.011508,0.004209,0.01633,-0.002407,-0.020862,7.94E-4,0.027509,0.003268,-0.034111,-0.007991,0.043097,0.016308,-0.052592,-0.027271,0.065272,0.045342,-0.079837,-0.073376,0.099566,0.126341,-0.12168,-0.24436,0.115923,0.615807,0.615807,0.115923,-0.24436,-0.12168,0.126341,0.099566,-0.073376,-0.079837,0.045342,0.065272,-0.027271,-0.052592,0.016308,0.043097,-0.007991,-0.034111,0.003268,0.027509,7.94E-4,-0.020862,-0.002407,0.01633,0.004209,-0.011508,-0.004124,0.008682,0.004736,-0.005435,-0.003867,0.004237,0.004482,-0.002603,-0.006686,-0.004639,-0.0013" />
 // Retrieval info: 	<generic name="coeffSetRealValueImag" value="0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0" />
 // Retrieval info: 	<generic name="coeffScaling" value="auto" />
 // Retrieval info: 	<generic name="coeffType" value="int" />
@@ -92,9 +92,9 @@ endmodule
 // Retrieval info: 	<generic name="karatsuba" value="false" />
 // Retrieval info: 	<generic name="outType" value="int" />
 // Retrieval info: 	<generic name="outMSBRound" value="trunc" />
-// Retrieval info: 	<generic name="outMsbBitRem" value="9" />
+// Retrieval info: 	<generic name="outMsbBitRem" value="10" />
 // Retrieval info: 	<generic name="outLSBRound" value="trunc" />
-// Retrieval info: 	<generic name="outLsbBitRem" value="22" />
+// Retrieval info: 	<generic name="outLsbBitRem" value="21" />
 // Retrieval info: 	<generic name="bankCount" value="1" />
 // Retrieval info: 	<generic name="bankDisplay" value="0" />
 // Retrieval info: </instance>

@@ -79,6 +79,10 @@ end
 logic [2:0] rst_n;
 always_ff @(posedge clk_96) rst_n<={rst_n[1:0],reg_rst_n};
 
+wire [15:0] dat_i;
+wire [15:0] dat_q;
+wire val_dat;
+
 DDS_48_v1 dds_0 (
 		.clk         (clk_96),     		// clk.clk
 		.reset_n     (rst_n[2]),  		// rst.reset_n
@@ -86,9 +90,34 @@ DDS_48_v1 dds_0 (
 		.phi_inc_i   (phi_dds_reg),   	//    .phi_inc_i  48'd43980465111040
 		.freq_mod_i  (0),  				//    .freq_mod_i
 		.phase_mod_i (0), 				//    .phase_mod_i
-		.fsin_o      (data_I),     		// out.fsin_o
-		.fcos_o      (data_Q),     		//    .fcos_o
-		.out_valid   (valid)  			//    .out_valid
+		.fsin_o      (dat_i),     		// out.fsin_o
+		.fcos_o      (dat_q),     		//    .fcos_o
+		.out_valid   (val_dat)  			//    .out_valid
 	);
+
+fir_dds_0002 
+fir_dds_i (
+		.clk              (clk_96),              //                     clk.clk
+		.reset_n          (rst_n[2]),          //                     rst.reset_n
+		.ast_sink_data    (dat_i),    //   avalon_streaming_sink.data
+		.ast_sink_valid   (val_dat),   //                        .valid
+		.ast_sink_error   (0),   //                        .error
+		.ast_source_data  (data_I),  // avalon_streaming_source.data
+		.ast_source_valid (valid), //                        .valid
+		.ast_source_error ()  //                        .error
+	);
+
+fir_dds_0002 
+fir_dds_q (
+		.clk              (clk_96),              //                     clk.clk
+		.reset_n          (rst_n[2]),          //                     rst.reset_n
+		.ast_sink_data    (dat_q),    //   avalon_streaming_sink.data
+		.ast_sink_valid   (val_dat),   //                        .valid
+		.ast_sink_error   (0),   //                        .error
+		.ast_source_data  (data_Q),  // avalon_streaming_source.data
+		.ast_source_valid (), //                        .valid
+		.ast_source_error ()  //                        .error
+	);
+
 
 endmodule

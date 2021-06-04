@@ -138,8 +138,7 @@ wire  i_sor_valid;
 wire [19:0] q_fir_data;	 
 wire  q_sor_valid;
 
-
-fir
+fir2
 fir_i (
 		.clk              (clk),              //                     clk.clk
 		.reset_n          (n_rst3),          //                     rst.reset_n
@@ -152,7 +151,7 @@ fir_i (
 	);
 
 
-fir
+fir2
 fir_q (
 		.clk              (clk),              //                     clk.clk
 		.reset_n          (n_rst4),          //                     rst.reset_n
@@ -163,32 +162,6 @@ fir_q (
 		.ast_source_valid (q_sor_valid), //                        .valid
 		.ast_source_error ()  //                        .error
 	);	
-	
-	
-wire [15:0] i_dsp_data;
-wire i_dsp_valid;  
-
-wire [15:0] q_dsp_data;
-wire q_dsp_valid;
-	
-decimator_t2  #(2)  //c децимацией!!
-dec_i(
-	.out(i_dsp_data),
-	.o_valid(i_dsp_valid),
-	.clk(clk),
-	.valid(i_sor_valid),// r_i_fir_valid
-	.in(i_fir_data)// [тут 20 битный вход]
-); 
-
-decimator_t2  #(2)  //c децимацией!!
-dec_q(
-	.out(q_dsp_data),
-	.o_valid(q_dsp_valid),
-	.clk(clk),
-	.valid(q_sor_valid),// r_q_fir_valid
-	.in(q_fir_data)//  [тут 20 битный вход]!!!
-);
-
 
 reg [31:0] data_dsp=0;
 reg [15:0] data_i=0;
@@ -196,10 +169,10 @@ reg [15:0] data_q=0;
 reg data_valid=0;
 
 always @(posedge clk)
-if (q_dsp_valid&i_dsp_valid)
+if (q_sor_valid&i_sor_valid)
 begin
-data_i    <=i_dsp_data;
-data_q    <=q_dsp_data;
+data_i    <=i_fir_data[19:4];
+data_q    <=q_fir_data[19:4];
 data_dsp  <={data_i,data_q};
 		 data_valid<=1;
 end else data_valid<=0;

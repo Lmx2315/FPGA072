@@ -45,18 +45,18 @@ output LED1;
 
 output TST;
 
-parameter adr_spi_rd_stat_mem1    =18;//чтение 32 бит служебных данных из памяти UDP ресивера 
-parameter adr_spi_rd_data_mem1    =17;//чтение 32 бит данных из памяти UDP ресивера 
-parameter adr_spi_wr_data_adr_mem1=16;//запись адреса памяти для чтения,управление чтением пакета из фифо МАС
+parameter adr_spi_rd_stat_mem1    =18;//чтение 16 бит - дескриптор, размер пакета в памяти ФИФО который надо скачать
+parameter adr_spi_rd_data_mem1    =17;//чтение 32 бит данных из памяти ФИФО UDP ресивера 
+parameter adr_spi_wr_data_adr_mem1=16;//ресет приёмных ФИФО ETH 
 parameter adr_spi_wr_data_UDP_MAC0=15;//управление потоком в MAC 1 - вкл , 0 - выкл
-parameter adr_spi_wr_adr_MAC0     =13;//записываем адресс чтения/записи (пишется первым)
+parameter adr_spi_wr_adr_MAC0     =13;//записываем адресс чтения/записи (пишется первым) МАК
 parameter adr_spi_wr_data_MAC0    =12;//запись в МАС данных
 parameter adr_spi_rd_data_MAC0    =14;//чтение 32 бит данных
 parameter adr_spi_eth1            = 9;//чтение 32 бит данных TEST
 parameter adr_spi_i2c_upr1        =10;//32 записываем команду в блок i2c в формате: {<w/r>[6:0][7:0]}
 parameter adr_spi_i2c_rd1         =11;//24 записываем команду в блок i2c в формате: {<w/r>[6:0][7:0]}
-parameter adr_spi_wr_adr_mem2     =34;//адресс чтения памяти UDP
-parameter adr_spi_rd_data_mem2    =37;//данные чтения из памяти UDP
+parameter adr_spi_wr_adr_mem2     =34;//REZERV
+parameter adr_spi_rd_stat_fifo    =37;//стаатистика приёмного буфера фифо
 parameter adr_spi_wr_adr_MEM3     =38;//адресс для памяти МЕМ3 {adr,data} 48 бит 
 parameter adr_spi_wr_data_MEM3    =39;//данные для памяти МЕМ3
 parameter adr_spi_wr_crc_MEM3     =44;//Kонтрольная сумму для данных в блоке памяти МЕМ3 
@@ -68,7 +68,7 @@ parameter adr_spi_wr_MAC_DEST     =21;//адрес записи для МАС   
 parameter adr_spi_rd_MAC_dest     =21;//тут скачиваем MAC адрес нашего DEST-а (кто нами управляет)
 //parameter ip_my=32'h0103013e;
 
-wire xSPI3_MISO1;
+wire xSPI3_MISO1;//Обязательно должны куда то вести!!!
 wire xSPI3_MISO2;
 wire xSPI3_MISO3;
 wire xSPI3_MISO4;
@@ -76,15 +76,13 @@ wire xSPI3_MISO5;
 wire xSPI3_MISO6;
 wire xSPI3_MISO7;
 
-
-assign xSPI3_MISO = xSPI3_MISO1& 
+assign xSPI3_MISO = xSPI3_MISO1& //Обязательно должны куда то вести!!!
 					xSPI3_MISO2& 
 					xSPI3_MISO3&
 					xSPI3_MISO4&
 					xSPI3_MISO5&
 					xSPI3_MISO6&
 					xSPI3_MISO7;
-
 
 wire led_crs;
 wire led_col;
@@ -136,16 +134,15 @@ wire wr3;
 wire wr4;
 wire wr5;
 
-wire [15:0] adr_spi_mem;
 wire [31:0] data_spi_mem;
-wire [31:0] stat_spi_mem;
+
 wire [17:0] w_rx_error_stat;
 wire udp_spi_rd;
 wire w_rx_rdy;
 wire w_rx_sop;
 wire w_rx_eop;
 wire w_rx_dval;
-wire w_rx_mod;
+wire [1:0] w_rx_mod;
 wire [ 3:0] w_rx_frm_type;
 wire [31:0] udp_data_rx;
 
@@ -208,177 +205,122 @@ Block_write_spi_mac //запись IP  в блок ETH
 	.out ({IP_dest2_SPI}),.wr(wr4),.wtreq(0));
 
 Block_read_spi_mac  //чтение 32 бит служебных данных из памяти UDP ресивера 
- #(48,adr_spi_rd_stat_mem1) spi_rd_stat_mem1( .clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO1),
- .cs(xCS_FPGA1) ,.rst(reset_all) ,.inport	 ({mem1_size,stat_spi_mem}),.clr(),.wtreq(0));//
-
-Block_read_spi_mac  //чтение 32 бит служебных данных из памяти UDP ресивера 
  #(48,adr_spi_rd_MAC_dest) spi_rd_MAC_dest( .clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO7),
  .cs(xCS_FPGA1) ,.rst(reset_all) ,
  .inport	 ({w_source_mac_UDP[7:0],w_source_mac_UDP[15:8],w_source_mac_UDP[23:16],w_source_mac_UDP[31:24],w_source_mac_UDP[39:32],w_source_mac_UDP[47:40]}),.clr(),.wtreq(0));//
 
+/*
 Block_read_spi_mac  //чтение 32 бит данных из памяти UDP ресивера 
  #(32,adr_spi_rd_data_mem1) spi_rd_data_mem1( .clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO2),
  .cs(xCS_FPGA1) ,.rst(reset_all) ,.inport	 (data_spi_mem),.clr(udp_spi_rd),.wtreq(0));//
-
+*/
 Block_write_spi_mac //запись адреса памяти для чтения,управление чтением пакета из фифо МАС
  #(16,adr_spi_wr_data_adr_mem1) spi_wr_data_adr_mem1(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(),.cs(xCS_FPGA1) ,.rst(reset_all) ,
-	.out (adr_spi_mem),.wr(),.wtreq(0));
+	.out (),.wr(FIFO_UDPrcv_rst),.wtreq(0));
 
+Block_read_spi_mac_FIFO_dly1 //чтение 32 бит данных из FIFO UDP ресивера
+#(32,adr_spi_rd_data_mem1) spi_rd_data_FIFO(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),
+.miso(xSPI3_MISO2),.cs(xCS_FPGA1) ,.rst(reset_all) ,.inport(FIFO_DATA),.req(FIFO_UDPrcv_rdreq),.wtreq(0) );
+
+Block_read_spi_mac_FIFO_dly1  //чтение 48 бит служебных данных из памяти UDP ресивера 
+ #(16,adr_spi_rd_stat_mem1) spi_rd_size_mem1(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),
+ .miso(xSPI3_MISO1),.cs(xCS_FPGA1) ,.rst(reset_all) ,.inport(mem1_size),.req(fifo_desc_req),.wtreq(0));//
+
+ Block_read_spi_mac_FIFO_dly1  //чтение 48 бит служебных данных из памяти UDP ресивера 
+ #(32,adr_spi_rd_stat_fifo) spi_rd_stat_mem1(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),
+ .miso(xSPI3_MISO6),.cs(xCS_FPGA1) ,.rst(reset_all) ,.inport(stat_data),.req(FIFO_STAT_rdreq),.wtreq(0));//
 
 wire [10:0] mem1_w_adr_wr;
 wire [10:0] mem1_w_adr_rd;
 wire [31:0] mem1_data_to_mem;
 wire [31:0] mem1_data_from_mem;
 wire [15:0] mem1_size;
+wire [15:0] mem1_size_FIFO;
 wire mem1_wr_en;
-
+wire fifo_desc_req;
 
 //-------------UDP resiver----------------
 
+wire [31:0] stat_mem;
+wire [31:0] stat_data;
+wire FIFO_STAT_rdreq;
 
-mem1	//mem - для скачивания на мк
-mem1_inst 
-(
+fifo_udp_rcv	
+fifo_ERROR_rcv_inst (
 	.clock ( clk_125 ),
-	.data ( mem1_data_to_mem ),
-	.rdaddress ( mem1_w_adr_rd ),
-	.wraddress ( mem1_w_adr_wr ),
-	.wren ( mem1_wr_en ),
-	.q ( mem1_data_from_mem )
+	.data  ( stat_mem ),
+	.rdreq ( FIFO_STAT_rdreq ),
+	.sclr  ( FIFO_UDPrcv_rst ),//сброс fifo, формируется когда МК присылает 0xFFFF по "адресу"
+	.wrreq ( FIFO_UDPrcv_wrreq ),
+	.full  (  ),
+	.q     (stat_data)
 	);
 
+wire FIFO_UDPrcv_rdreq;
+wire FIFO_UDPrcv_wrreq;
+wire FIFO_UDPrcv_rst;
+wire [31:0] FIFO_DATA;
 
-wire w_en_ARP;//сигнал сообщающий что послать пакет
-wire [47:0] w_source_mac;    //это МАК адресс полученный из АРП пакета
+fifo_udp_rcv	
+fifo_udp_rcv_inst (
+	.clock ( clk_125 ),
+	.data  ( mem1_data_to_mem ),
+	.rdreq ( FIFO_UDPrcv_rdreq ),
+	.sclr  ( FIFO_UDPrcv_rst ),//сброс fifo, формируется когда МК присылает 0xFFFF по "адресу"
+	.wrreq ( FIFO_UDPrcv_wrreq ),
+	.full  (  ),
+	.q     (FIFO_DATA)
+	);
+
+fifi_desc	
+fifi_desc_inst (
+	.clock   ( clk_125 ),
+	.data    ( mem1_size_FIFO ),
+	.rdreq   ( fifo_desc_req ),
+	.sclr    ( FIFO_UDPrcv_rst ),
+	.wrreq   ( w_descr_wr ),
+	.full    (  ),
+	.q       ( mem1_size )
+	);
+
 wire [47:0] w_source_mac_UDP;//это МАК адресс полученный из принятого UDP пакета 
 wire [31:0] w_test;
+wire w_FLAG_INT_MK;
+wire w_descr_wr;
 
-wire [ 7:0] w_reply;
-wire [ 7:0] w_type;
-wire [ 7:0] w_code;
-wire [15:0] w_identifier;
-wire [15:0] w_seq_number;
-wire [15:0] w_identification;
-
-
-wire [15:0] packet_length;
-wire [15:0] adr_mem_upr;
-wire xSDRAM_wr;
-wire xSDRAM_rd;
-wire [31:0] data_to_mem2;
-wire [31:0] w_crc_ICMP;
-
-
-
-udp_reciver 
- udp_rcv1( 
- .clk(clk_125) ,
- .rx_data(udp_data_rx),
- .rx_sop (w_rx_sop),
- .rx_eop (w_rx_eop),
- .rx_rdy (w_rx_rdy),
- .rx_dval(w_rx_dval),
- .rx_dsav(0),
- .rx_err (w_rx_err),
- .rx_err_stat(w_rx_error_stat),
- .rx_frm_type(w_rx_frm_type),
- .rx_mod(w_rx_mod) ,
- .rx_a_full(w_rx_full) ,
- .rx_a_empty(w_rx_empty) ,
- .adr(adr_spi_mem) , //spi
- .data(data_spi_mem),//spi
- .rd(udp_spi_rd) ,   //spi
- .rst(reset_all),
- .adr_wr(mem1_w_adr_wr),
- .adr_rd(mem1_w_adr_rd),
- .int_rsv(),
- .data_to_mem(mem1_data_to_mem),
- .data_from_mem(mem1_data_from_mem),
- .stat_err(stat_spi_mem),
- .wren_mem(mem1_wr_en),
- .size(mem1_size),
- .send(w_en_ARP),
- .source_mac_ARP(w_source_mac),//тут получаем MAC адресс принятый при ARP запросе
- .source_mac(w_source_mac_UDP),//тут получаем MAC адресс принятый при UDP запросе
- .test(w_test),
-
- .reply(w_reply),
- .type_i(w_type),
- .code(w_code),
- .identifier(w_identifier),
- .seq_number(w_seq_number),
- .identification(w_identification),
- .ip_my(reg_IP_my_SPI),//ip_my
- //--------для работы с UDP пакетами--------------
- .adr_udp(adr_mem_upr),//16 бит
- .length_packet_udp(packet_length),//16 бит
- .SDRAM_WR(xSDRAM_wr),
- .SDRAM_RD(xSDRAM_rd),
- .data_mem2(data_to_mem2),
- .crc_icmp(w_crc_ICMP),
- .icmp_length(w_icmp_length),
- .socket_port(reg_PORT_my_SPI),
- .ICMP_IP_DEST(w_IP_DEST_icpm) //тут IP адресс того кто нам отправил запрос
- );
-
+udp_rcv 
+udp_rcv1( 
+.clk        (clk_125) ,
+.rx_data    (udp_data_rx) ,
+.rx_sop     (w_rx_sop) ,
+.rx_eop     (w_rx_eop) ,
+.rx_rdy     (w_rx_rdy) ,
+.rx_dval    (w_rx_dval) ,
+.rx_dsav    (0) ,
+.rx_err     (w_rx_err) ,
+.rx_err_stat(w_rx_error_stat),
+.rx_frm_type(w_rx_frm_type),
+.rx_mod     (w_rx_mod),
+.rx_a_full  (w_rx_full),
+.rx_a_empty (w_rx_empty),
+.rst        (reset_all),
+.data_to_mem(mem1_data_to_mem),
+.stat_err   (stat_mem),
+.wren_mem   (FIFO_UDPrcv_wrreq),
+.size       (mem1_size_FIFO),
+.int_rsv    (w_FLAG_INT_MK),
+.desc_wr    (w_descr_wr)
+);
  
-
- wire [15:0] w_icmp_length;
+ assign INT_MK=w_FLAG_INT_MK;
  
- assign INT_MK=xSDRAM_wr;
- 
-//-----------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
+wire [7:0] control_UDP_form;
 
 Block_write_spi_mac //управление потоком в MAC 1 - вкл , 0 - выкл
  #(8,adr_spi_wr_data_UDP_MAC0) spi_wr_data_UDP_MAC0(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(),.cs(xCS_FPGA1) ,.rst(reset_all) ,
 	.out (control_UDP_form),.wr(w_en_UDP1),.wtreq(0));
-
-wire [7:0] control_UDP_form;
-wire udp_en;
-//-------------UDP reciver-------------------
-
-wire [10:0] mem2_wr_adr;
-wire [31:0] mem2_wr_data;
-wire [31:0] mem2_rd_data;
-wire [15:0] mem2_adr_rd;
-wire mem2_wr;
-
-//блок памяти для хранения принятых данных из UDP пакета
-mem1	
-mem2_inst 
-(
-	.clock ( clk_125 ),
-	.data (mem2_wr_data),
-	.rdaddress (mem2_adr_rd[10:0]),
-	.wraddress ( mem2_wr_adr ),
-	.wren (mem2_wr),
-	.q (mem2_rd_data)
-	);
-
-//блок принимает поток данных из ресивера UDP и отправляет его в память МЕМ2
-udp_packet_rcv 
-rcv1( 
-.clk(clk_125) ,
-.sdram_wr(xSDRAM_wr) ,
-.sdram_rd(xSDRAM_rd) ,
-.adr_mem(adr_mem_upr) ,//адрес начала записи
-.packet_length(packet_length) ,
-.data(data_to_mem2) ,
-.mem_adr(mem2_wr_adr) ,
-.mem_data_to(mem2_wr_data),
-.mem_wr(mem2_wr)
- );
-
-Block_write_spi_mac //запись адреса памяти для чтения,из МЕМ2
- #(16,adr_spi_wr_adr_mem2) spi_wr_adr_mem2(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(),.cs(xCS_FPGA1) ,.rst(reset_all) ,
-	.out (mem2_adr_rd),.wr(),.wtreq(0));//для проверки отправки UDP
-
-Block_read_spi_mac  //чтение 32 бит данных из памяти UDP ресивера 
- #(32,adr_spi_rd_data_mem2) spi_rd_data_mem2( .clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(xSPI3_MISO6),
- .cs(xCS_FPGA1) ,.rst(reset_all) ,.inport	 (mem2_rd_data),.clr(),.wtreq(0));//
-
-//-------------------------------------------
-
+//----------------------------------------------------------------------------------------------------------------------------------------
 
 wire [31:0] mem3_wr_data;
 wire [15:0] mem3_adr_rd;
@@ -387,7 +329,6 @@ wire mem3_wr;
 wire [31:0] mem3_rd_data;
 wire w_UDP2_start; //запускает выдачу пакета данных (квитанции) в UDP - начинается по окончании записи CRC в модуль udp_send2
 wire [15:0] w_data_size;
-
 
 Block_write_spi_mac //запись адреса МЕМ3 данных
  #(16,adr_spi_wr_adr_MEM3) spi_wr_adr_mem3(.clk(clk_125),.sclk(xSPI3_SCK),.mosi(xSPI3_MOSI),.miso(),.cs(xCS_FPGA1) ,.rst(reset_all) ,
@@ -423,34 +364,7 @@ wire [ 1:0] w_tx_mod3;
 wire w_en_UDP1;
 wire [31:0] w_crc_data_mem3;
 wire sch_start;
-/*
-mk_to_udp_sender 
-udp_send2( 
-.en         (w_UDP2_start),//запуск передачи
-.tx_uflow   (0) ,
-.tx_septy   (0) ,
-.tx_mod     (w_tx_mod3) ,//показывает число валидных байт в последнем передаваемом слове
-.tx_err     () ,
-.tx_crc_fwd () ,
-.tx_wren    (w_tx_wren3) ,
-.tx_rdy     (w_tx_rdy3) ,
-.tx_eop     (w_tx_eop3) ,
-.tx_sop     (w_tx_sop3) ,
-.tx_data    (w_tx_data3) ,
-.port_dest  (reg_PORT_dest_SPI) ,//139
-.port_source(reg_PORT_my_SPI) ,//77
-.ip_dest    (reg_IP_dest_SPI) ,
-.ip_source  (reg_IP_my_SPI) ,//ip_my
-.dest_mac   (reg_MAC_DEST_SPI) ,
-.mac        (reg_MAC_my_SPI) ,//my_mac
-.clk        (clk_125) ,
-.mem_data   (mem3_rd_data),
-.mem_adr_rd (mem3_adr_rd),
-.mem_length (w_data_size),			//длинна посылки в байтах= 128 , временно - надо сделать либо счётчик либо передачу из МК!!!
-.crc_data   (w_crc_data_mem3),		//контрольная сумма блока для передачи по UDP расчитывается микроконтроллером, должна быть также приложена к концу блока
-.END_TX()
-);
-*/
+
 mk_to_udp_sender_v2 
 udp_send2( 
 .en         (w_UDP2_start),//запуск передачи
@@ -479,7 +393,7 @@ udp_arbitr_3 //это модуль принимает решение кого п
 ar1( 
 .clk(clk_125) ,
 .tx_rdy(tx_rdy_w),
-.en_arp (w_en_ARP) ,
+.en_arp (0) ,
 .en_udp1(w_start),//
 .en_udp2(w_UDP2_start),
 .tx_mod1(w_tx_mod1) ,
@@ -513,15 +427,6 @@ wire [31:0] w_tx_data2;
 wire [ 1:0] w_tx_mod2;	
 wire w_tx_rdy2;
 
-/*
-z1 
-z1_inst
-(
-.clk(clk_125),
-.en(w_en_UDP1),
-.start(sch_start)
-);
-*/
 
 wire [31:0] w_time_buf;
 logic  clr_TIME;
@@ -729,39 +634,7 @@ wire [31:0] mem_icmp_q;
 wire [10:0] mem_icmp_adr;
 wire wrst_crc;
 wire [31:0] w_IP_DEST_icpm;
-
-arp_sender //ARP и ICMP ответ
-arp1( 
-	.en(w_en_ARP),
-	.tx_uflow() ,
-	.tx_septy() ,
-	.tx_mod(w_tx_mod1) ,
-	.tx_err() ,
-	.tx_crc_fwd() ,
-	.tx_wren(w_tx_wren1) ,
-	.tx_rdy(w_tx_rdy1) ,
-	.tx_eop(w_tx_eop1) ,
-	.tx_sop(w_tx_sop1) ,
-	.tx_data(w_tx_data1) ,
-	.ip_dest  (w_IP_DEST_icpm) ,// 32'h01030101 reg_IP_dest_SPI
-	.ip_source(reg_IP_my_SPI) ,//ip_my
-	.dest_mac(w_source_mac) ,
-	.mac(reg_MAC_my_SPI) ,//my_mac  MAC address is            
-	.clk(clk_125),
-	.reply(w_reply),
-	.type_i(0),//0 - reply
-	.code(w_code),
-	.identifier(w_identifier),
-	.seq_number(w_seq_number),
-	.identification(w_identification),
-	.mem_data(mem_icmp_q),
-	.mem_adr(mem_icmp_adr),
-	.crc_ICMP(w_crc_ICMP),
-	.icmp_length(w_icmp_length),
-	.rst_crc(wrst_crc)
-	 );
-
-	 
+ 
 	 
 wire [139:0] reconfig_to_xcvr_w1;
 wire [91:0]  reconfig_from_xcvr_w1;

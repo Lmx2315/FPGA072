@@ -1811,17 +1811,17 @@ wire 		 dds_valid;
 
 dds_chirp 
 dds1(
-	.clk_96 		(clk_96_dac1),    	// Clock
-	.clk_48 		(clk_48_1 	),
-	.REQ			(wREQ		),  	//запрос на передачу данных из 125 МГц в 96 МГц
-    .ACK			(wACK		),		//подтверждение что данные переданы
-	.DDS_freq 		(wFREQ 		),
-	.DDS_delta_freq (wFREQ_STEP ),
-	.DDS_delta_rate (wFREQ_RATE ),
-	.start 			(DDS_START 	),
-	.data_I 		(data_I 	),
-	.data_Q 		(data_Q 	),
-	.valid 			(dds_valid 	)	
+	.clk_96 		 (clk_96_dac1  ),    	// Clock
+	.clk_48 		 (clk_48_1 	),
+	.REQ			 (wREQ		),  	//запрос на передачу данных из 125 МГц в 96 МГц
+     .ACK			 (wACK		),		//подтверждение что данные переданы
+	.DDS_freq       (wFREQ 		),
+	.DDS_delta_freq (wFREQ_STEP   ),
+	.DDS_delta_rate (wFREQ_RATE   ),
+	.start 		 (DDS_START 	),
+	.data_I 		 (data_I 	     ),
+	.data_Q 		 (data_Q 	     ),
+	.valid 		 (dds_valid 	)	
 );
 
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
